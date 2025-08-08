@@ -170,16 +170,6 @@ const ScoreboardPage = () => {
     const homeTeamActions = { setScore: setHomeScore, setFouls: setHomeFouls };
     const awayTeamActions = { setScore: setAwayScore, setFouls: setAwayFouls };
 
-    const toggleFullScreen = () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
-    };
-
     return (
         <div>
             <div className={`scoreboard ${isTimeoutActive ? `timeout-active timeout-${timeoutTeam}` : ''}`}>
