@@ -1,0 +1,382 @@
+:root {
+    --home-color: #1a3a8f;
+    --away-color: #8f1a1a;
+    --primary-bg: #222;
+    --secondary-bg: #333;
+    --input-bg: #444;
+    --text-color: #fff;
+    --border-color: #555;
+    --highlight-color: #4CAF50;
+    --timeout-color: #ff5722;
+    --halftime-color: #ff9900;
+    --period-bg: rgba(0, 0, 0, 0.3);
+    --timeout-bg: #ff9800;
+    --timeout-used: #cccccc;
+    --whistle-color: #ff5722;
+}
+
+/* Estilos Generales */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========== PÁGINA DE CONFIGURACIÓN (index.html) ========== */
+.config-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--secondary-bg);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.config-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--input-bg);
+    border-radius: 8px;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.btn-save {
+    background-color: var(--highlight-color);
+    color: white;
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+/* ========== PÁGINA DEL TABLERO (display.html) ========== */
+.scoreboard {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Estilos comunes para ambos equipos */
+.team {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.team-home { background-color: var(--home-color); }
+.team-away { background-color: var(--away-color); }
+
+.team-header {
+    height: 160px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.team-logo {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+}
+
+.team-name {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+.team-score {
+    font-family: 'Digital 7', sans-serif;
+    font-size: 12rem;
+    color: var(--text-color);
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    margin: 1rem 0;
+    line-height: 0.8;
+}
+
+/* Área central del tablero */
+.timer-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    padding: 2rem;
+    min-width: 300px;
+}
+
+.main-timer {
+    font-family: 'Digital 7', sans-serif;
+    font-size: 20rem;
+    color: var(--text-color);
+    margin: 1rem 0;
+    line-height: 0.8;
+    letter-spacing: -0.5rem;
+}
+
+.official-timer {
+    font-family: 'Digital 7', sans-serif;
+    font-size: 2rem;
+    color: #aaa;
+    margin-bottom: 1.5rem;
+}
+
+/* Controles */
+.team-controls, .timer-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.btn-score, .btn-timer, .btn-foul, .btn-timeout {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-score {
+    width: 5rem;
+    height: 5rem;
+    font-size: 2rem;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.2);
+    color: var(--text-color);
+}
+
+.btn-timer {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+/* Sección de faltas */
+.team-fouls {
+    margin-top: 1.5rem;
+    text-align: center;
+    width: 80%;
+    background-color: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.fouls-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.btn-foul {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.2);
+    color: var(--text-color);
+}
+
+/* Tiempo muerto */
+.btn-timeout {
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    background-color: var(--timeout-bg);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.timeout-status {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+/* Controles flotantes */
+.controls-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.btn-config, .btn-fullscreen, .btn-whistle {
+    padding: 12px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-config { background-color: var(--highlight-color); color: white; }
+.btn-fullscreen { background-color: #2196F3; color: white; }
+.btn-whistle { background-color: var(--whistle-color); color: white; }
+
+/* ========== DISEÑO RESPONSIVO ========== */
+@media (max-width: 1200px) {
+    .main-timer { font-size: 20rem; }
+    .team-score { font-size: 10rem; }
+}
+
+@media (max-width: 992px) {
+    .main-timer { font-size: 15rem; letter-spacing: -0.3rem; }
+    .team-score { font-size: 8rem; }
+    #period { font-size: 4rem; }
+}
+
+@media (max-width: 768px) {
+    .scoreboard { flex-direction: column; min-height: auto; }
+    
+    .team { 
+        padding: 1rem; 
+        flex-direction: row; 
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    
+    .team-header { 
+        height: 120px; 
+        order: 1;
+        flex: 1 1 100%;
+    }
+    
+    .team-name { 
+        order: 2;
+        font-size: 2rem;
+        margin: 0.5rem 0;
+    }
+    
+    .team-score { 
+        order: 3;
+        font-size: 6rem;
+        margin: 0.5rem 0;
+    }
+    
+    .team-controls { 
+        order: 4;
+        margin: 0.5rem 0;
+    }
+    
+    .team-fouls, .team-timeout { 
+        order: 5;
+        width: 45%;
+        margin: 0.5rem 0;
+    }
+    
+    .main-timer { font-size: 12rem; }
+    
+    .controls-container {
+        right: 15px;
+        bottom: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-timer { font-size: 10rem; }
+    .team-name { font-size: 1.8rem; }
+    .team-score { font-size: 5rem; }
+    #period { font-size: 3rem; }
+    
+    .btn-score { 
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.8rem;
+    }
+    
+    .team-fouls, .team-timeout { 
+        width: 100%;
+    }
+    
+    .controls-container {
+        right: 50%;
+        transform: translateX(50%);
+        bottom: 10px;
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-timer { font-size: 8rem; }
+    .team-name { font-size: 1.5rem; }
+    .team-score { font-size: 4rem; }
+    
+    .btn-timer, .btn-timeout {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .team-header { height: 100px; }
+}
+
+.btn-timeout:disabled {
+    background-color: var(--timeout-used);
+    color: var(--timeout-used-text);
+    /* Efecto de "apagado" */
+    filter: grayscale(30%);
+    opacity: 0.8;
+}
+
+.halftime-active {
+    background-color: rgba(255, 165, 0, 0.1) !important;
+    position: relative;
+}
+
+.halftime-active::before {
+    content: "ENTRETIEMPO";
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--halftime-color);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    z-index: 10;
+}
+
+.halftime-active .main-timer {
+    color: var(--halftime-color) !important;
+}
+
+.hidden {
+    display: none;
+}

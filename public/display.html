@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Hockey Patín</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Digital+7&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="scoreboard">
+        <div class="team team-home" id="home-team-display">
+            <div class="team-header" id="home-header"></div>
+            <div class="team-name" id="home-name"></div>
+            <div class="team-score" id="home-score">0</div>
+            <div class="team-controls">
+                <button class="btn-score" id="home-plus">+</button>
+                <button class="btn-score" id="home-minus">-</button>
+            </div>
+            <div class="team-fouls">
+                <span>Faltas</span>
+                <div class="fouls-display">
+                    <button class="btn-foul" id="home-foul-plus">+</button>
+                    <span id="home-fouls">0</span>
+                    <button class="btn-foul" id="home-foul-minus">-</button>
+                </div>
+            </div>
+            <div class="team-timeout">
+                <button class="btn-timeout" id="home-timeout">T. MUERTO</button>
+                <div class="timeout-status" id="home-timeout-status">DISPONIBLE</div>
+            </div>
+        </div>
+
+        <div class="timer-container" id="timer-container">
+            <div class="main-timer" id="main-timer">20:00</div>
+            <div class="official-timer" id="official-timer">20:00</div>
+            <div class="timer-controls">
+                <button class="btn-timer" id="start-pause">INICIAR</button>
+                <button class="btn-timer" id="reset">REINICIAR</button>
+                <button id="start-halftime-btn" class="btn-timer hidden">Iniciar Entretiempo</button>
+
+            </div>
+            <div class="period-info">
+                <span>PERIODO</span>
+                <span id="period">1</span>
+            </div>
+        </div>
+
+        <div class="team team-away" id="away-team-display">
+            <div class="team-header" id="away-header"></div>
+            <div class="team-name" id="away-name"></div>
+            <div class="team-score" id="away-score">0</div>
+            <div class="team-controls">
+                <button class="btn-score" id="away-plus">+</button>
+                <button class="btn-score" id="away-minus">-</button>
+            </div>
+            <div class="team-fouls">
+                <span>Faltas</span>
+                <div class="fouls-display">
+                    <button class="btn-foul" id="away-foul-plus">+</button>
+                    <span id="away-fouls">0</span>
+                    <button class="btn-foul" id="away-foul-minus">-</button>
+                </div>
+            </div>
+            <div class="team-timeout">
+                <button class="btn-timeout" id="away-timeout">T. MUERTO</button>
+                <div class="timeout-status" id="away-timeout-status">DISPONIBLE</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls-container" class="controls-container">
+        <a href="index.html" class="btn-config">Ajustes</a>
+        <button id="enter-fullscreen" class="btn-fullscreen">Pantalla Completa</button>
+    </div>
+
+    <script src="display.js"></script>
+</body>
+</html>

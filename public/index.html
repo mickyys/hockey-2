@@ -1,11 +1,88 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-	</head>
-	<body>
-		<h1 id="heading">Hello, World!</h1>
-	</body>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Tablero Hockey Patín</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="config-container">
+        <h1>Configuración del Tablero</h1>
+
+        <div class="config-section">
+            <h2>Equipos</h2>
+            <div class="input-group">
+                <label for="home-team">Equipo Local:</label>
+                <input type="text" id="home-team" value="LOCAL">
+            </div>
+            <div class="input-group">
+                <label for="home-color">Color Local:</label>
+                <input type="color" id="home-color" value="#1a3a8f">
+            </div>
+            <div class="input-group">
+                <label for="home-logo">Logo Local (opcional):</label>
+                <input type="file" id="home-logo" accept="image/*">
+            </div>
+            <div class="input-group">
+                <label for="away-team">Equipo Visitante:</label>
+                <input type="text" id="away-team" value="VISITANTE">
+            </div>
+            <div class="input-group">
+                <label for="away-color">Color Visitante:</label>
+                <input type="color" id="away-color" value="#8f1a1a">
+            </div>
+            <div class="input-group">
+                <label for="away-logo">Logo Visitante (opcional):</label>
+                <input type="file" id="away-logo" accept="image/*">
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Temporizador</h2>
+            <div class="input-group">
+                <label for="period-duration">Duración del Periodo (min):</label>
+                <input type="number" id="period-duration" min="1" max="99" value="20">
+            </div>
+            <div class="input-group">
+                <label for="halftime-duration">Duración del Entretiempo (min):</label>
+                <input type="number" id="halftime-duration" min="1" max="99" value="5">
+            </div>
+            <div class="input-group">
+                <label for="halftime-after-period">Entretiempo después del Período:</label>
+                <input type="number" id="halftime-after-period" min=31" max="99" value="1">
+            </div>
+
+
+            <div class="input-group">
+                <label for="total-periods">Número de Periodos:</label>
+                <select id="total-periods">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Opciones de Visualización</h2>
+            <div class="input-group">
+                <label for="show-period">Mostrar Periodo:</label>
+                <input type="checkbox" id="show-period" checked>
+            </div>
+            <div class="input-group">
+                <label for="show-timer">Mostrar Temporizador:</label>
+                <input type="checkbox" id="show-timer" checked>
+            </div>
+        </div>
+
+        <button id="save-config" class="btn-save">Guardar y Ver Tablero</button>
+    </div>
+
+    <script src="config.js"></script>
+</body>
+
 </html>
