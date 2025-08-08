@@ -1,8 +1,8 @@
 {
-  "name": "hockey-scoreboard",
+  "name": "scoreboard-pacifico",
   "version": "1.0.0",
   "private": true,
-  "author": "Jules",
+  "author": "Hector Martinez",
   "description": "A scoreboard application for roller hockey.",
   "main": "public/electron.js",
   "homepage": "./",
@@ -53,7 +53,8 @@
     "wait-on": "^8.0.4"
   },
   "build": {
-    "appId": "com.example.hockey-scoreboard",
+    "appId": "cl.hamp.scoreboard-pacifico",
+    "productName": "Scoreboard Pacífico",
     "files": [
       "build/**/*",
       "node_modules/**/*",
@@ -61,6 +62,10 @@
     ],
     "directories": {
       "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
     }
   }
 }
