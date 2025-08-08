@@ -21,6 +21,7 @@ const ScoreboardPage = () => {
     const [gameTime, setGameTime] = useState(config ? config.periodDuration * 60 : 0);
     const [isRunning, setIsRunning] = useState(false);
     const [period, setPeriod] = useState(1);
+    const [isGameOver, setIsGameOver] = useState(false);
 
     // Halftime State
     const [isHalftime, setIsHalftime] = useState(false);
@@ -35,14 +36,18 @@ const ScoreboardPage = () => {
     const [awayTimeoutUsed, setAwayTimeoutUsed] = useState(false);
 
     const advanceToNextPeriod = useCallback(() => {
-        const nextPeriod = period < config.totalPeriods ? period + 1 : 1;
-        setPeriod(nextPeriod);
-        setGameTime(config.periodDuration * 60);
-        setHomeTimeoutUsed(false);
-        setAwayTimeoutUsed(false);
-        setIsHalftime(false);
-        setIsHalftimeRunning(false);
-        setHalftimeTime(config.halftimeDuration * 60);
+        if (period < config.totalPeriods) {
+            setPeriod(p => p + 1);
+            setGameTime(config.periodDuration * 60);
+            setHomeTimeoutUsed(false);
+            setAwayTimeoutUsed(false);
+            setIsHalftime(false);
+            setIsHalftimeRunning(false);
+            setHalftimeTime(config.halftimeDuration * 60);
+        } else {
+            setIsGameOver(true);
+            setIsRunning(false);
+        }
     }, [period, config]);
 
     const endPeriod = useCallback(() => {
@@ -70,8 +75,11 @@ const ScoreboardPage = () => {
     // Keyboard Shortcuts
     useEffect(() => {
         const handleKeyDown = (event) => {
+            if (event.target.tagName.toLowerCase() === 'input') return;
+
             const keyActions = {
                 'Space': () => setIsRunning(prev => !prev),
+                'Enter': () => buzzerSound.current.play(),
                 'Digit1': () => setHomeScore(s => s + 1),
                 'Digit2': () => setHomeScore(s => Math.max(0, s - 1)),
                 'Digit9': () => setAwayScore(s => s + 1),
@@ -103,7 +111,7 @@ const ScoreboardPage = () => {
 
     useEffect(() => {
         let interval = null;
-        if (isRunning && gameTime > 0 && !isTimeoutActive) {
+        if (isRunning && gameTime > 0 && !isTimeoutActive && !isGameOver) {
             interval = setInterval(() => {
                 setGameTime(prevTime => prevTime - 1);
             }, 1000);
@@ -111,7 +119,7 @@ const ScoreboardPage = () => {
             endPeriod();
         }
         return () => clearInterval(interval);
-    }, [isRunning, gameTime, isTimeoutActive, endPeriod]);
+    }, [isRunning, gameTime, isTimeoutActive, isGameOver, endPeriod]);
 
     useEffect(() => {
         let timeoutInterval = null;
@@ -145,13 +153,15 @@ const ScoreboardPage = () => {
     }
 
     const timerState = {
-        gameTime, isRunning, period, isHalftime, halftimeTime, isHalftimeRunning, isTimeoutActive, timeoutTime, timeoutTeam
+        gameTime, isRunning, period, isHalftime, halftimeTime, isHalftimeRunning, isTimeoutActive, timeoutTime, timeoutTeam, isGameOver
     };
     const timerActions = {
-        toggleTimer: () => setIsRunning(prev => !prev && !isTimeoutActive && !isHalftime),
+        toggleTimer: () => setIsRunning(prev => !prev && !isTimeoutActive && !isHalftime && !isGameOver),
         resetTimer: () => {
             setIsRunning(false);
             setGameTime(config.periodDuration * 60);
+            setIsGameOver(false);
+            setPeriod(1);
         },
         startHalftime: () => setIsHalftimeRunning(true)
     };
