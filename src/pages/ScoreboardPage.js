@@ -179,7 +179,6 @@ const ScoreboardPage = () => {
             </div>
             <div id="controls-container" className="controls-container">
                 <Link to="/" className="btn-config">Configuración</Link>
-                <button className="btn-fullscreen" onClick={toggleFullScreen}>Fullscreen</button>
             </div>
         </div>
     );
