@@ -1,42 +1,44 @@
 document.addEventListener('DOMContentLoaded', function () {
     const saveBtn = document.getElementById('save-config');
+    const homeLogoSelect = document.getElementById('home-logo-select');
+    const awayLogoSelect = document.getElementById('away-logo-select');
+
+    const logos = [
+        'camuvi.png',
+        'huachipato.png',
+        'nuevo-pacifico.png',
+        'ohiggins.png'
+    ];
+
+    function populateLogoSelects() {
+        logos.forEach(logo => {
+            const optionHome = new Option(logo, `logo/${logo}`);
+            const optionAway = new Option(logo, `logo/${logo}`);
+            homeLogoSelect.add(optionHome);
+            awayLogoSelect.add(optionAway);
+        });
+    }
+
+    populateLogoSelects();
 
     saveBtn.addEventListener('click', function () {
-        const homeLogoInput = document.getElementById('home-logo');
-        const awayLogoInput = document.getElementById('away-logo');
-
-        const readLogo = (input) => {
-            return new Promise((resolve) => {
-                if (input.files && input.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(input.files[0]);
-                } else {
-                    resolve(null);
-                }
-            });
+        const config = {
+            homeTeam: document.getElementById('home-team').value,
+            homeColor: document.getElementById('home-color').value,
+            awayTeam: document.getElementById('away-team').value,
+            awayColor: document.getElementById('away-color').value,
+            periodDuration: parseInt(document.getElementById('period-duration').value) || 20,
+            totalPeriods: parseInt(document.getElementById('total-periods').value),
+            showPeriod: document.getElementById('show-period').checked,
+            showTimer: document.getElementById('show-timer').checked,
+            homeLogo: homeLogoSelect.value,
+            awayLogo: awayLogoSelect.value,
+            halftimeDuration: parseInt(document.getElementById('halftime-duration').value) || 5,
+            halftimeAfterPeriod: parseInt(document.getElementById('halftime-after-period').value) || 1
         };
 
-        Promise.all([readLogo(homeLogoInput), readLogo(awayLogoInput)]).then(([homeLogo, awayLogo]) => {
-            const config = {
-                homeTeam: document.getElementById('home-team').value,
-                homeColor: document.getElementById('home-color').value,
-                awayTeam: document.getElementById('away-team').value,
-                awayColor: document.getElementById('away-color').value,
-                periodDuration: parseInt(document.getElementById('period-duration').value) || 20,
-                totalPeriods: parseInt(document.getElementById('total-periods').value),
-                showPeriod: document.getElementById('show-period').checked,
-                showTimer: document.getElementById('show-timer').checked,
-                homeLogo: homeLogo,
-                awayLogo: awayLogo,
-                halftimeDuration: parseInt(document.getElementById('halftime-duration').value) || 5,
-                halftimeAfterPeriod: parseInt(document.getElementById('halftime-after-period').value) || 1// Entretiempo después de este período
-
-            };
-
-            localStorage.setItem('hockeyScoreboardConfig', JSON.stringify(config));
-            window.location.href = 'display.html';
-        });
+        localStorage.setItem('hockeyScoreboardConfig', JSON.stringify(config));
+        window.location.href = 'display.html';
     });
 
     // Cargar configuración previa si existe
@@ -53,11 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('show-timer').checked = config.showTimer;
         document.getElementById('halftime-duration').value = config.halftimeDuration || 5;
         document.getElementById('halftime-after-period').value = config.halftimeAfterPeriod || 1;
+        homeLogoSelect.value = config.homeLogo || '';
+        awayLogoSelect.value = config.awayLogo || '';
     }
 });
-
-
-
-
-
-
