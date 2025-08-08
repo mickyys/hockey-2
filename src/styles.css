@@ -137,6 +137,9 @@ body {
     margin: 1rem 0;
     line-height: 0.8;
     letter-spacing: -0.5rem;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
 }
 
 .official-timer {
