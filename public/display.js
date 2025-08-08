@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isTimeoutActive = false;
         scoreboard.classList.remove('timeout-active', 'timeout-home', 'timeout-away');
         whistleSound.play();
-        startGameTimer();
+        pauseGameTimer();
     }
 
     function resetTimeouts() {
