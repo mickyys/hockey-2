@@ -7,15 +7,19 @@ const formatTime = (seconds) => {
 };
 
 const Timer = ({ config, timerState, timerActions }) => {
-    const { gameTime, isRunning, period, isHalftime, halftimeTime, isHalftimeRunning, isTimeoutActive, timeoutTime, timeoutTeam } = timerState;
+    const { gameTime, isRunning, period, isHalftime, halftimeTime, isHalftimeRunning, isTimeoutActive, timeoutTime, isGameOver } = timerState;
     const { toggleTimer, resetTimer, startHalftime } = timerActions;
 
     let mainDisplay;
     let officialDisplay;
+    let showOfficialDisplay = true;
 
-    if (isTimeoutActive) {
+    if (isGameOver) {
+        mainDisplay = "FINAL";
+        showOfficialDisplay = false;
+    } else if (isTimeoutActive) {
         mainDisplay = formatTime(timeoutTime);
-        officialDisplay = `TIMEOUT ${timeoutTeam.toUpperCase()}`;
+        officialDisplay = formatTime(gameTime);
     } else if (isHalftime) {
         mainDisplay = formatTime(halftimeTime);
         officialDisplay = "ENTRETIEMPO";
@@ -27,23 +31,23 @@ const Timer = ({ config, timerState, timerActions }) => {
     return (
         <div className={`timer-container ${isHalftime ? 'halftime-active' : ''} ${isTimeoutActive ? 'timeout-active' : ''}`}>
             {config.showTimer && <div className="main-timer">{mainDisplay}</div>}
-            <div className="official-timer">{officialDisplay}</div>
+            {showOfficialDisplay && <div className="official-timer">{officialDisplay}</div>}
             <div className="timer-controls">
-                {!isHalftime && !isTimeoutActive && (
+                {!isHalftime && !isTimeoutActive && !isGameOver && (
                     <>
                         <button className="btn-timer" onClick={toggleTimer}>
                             {isRunning ? 'PAUSA' : 'INICIAR'}
                         </button>
-                        <button className="btn-timer" onClick={resetTimer}>REINICIAR</button>
                     </>
                 )}
+                 <button className="btn-timer" onClick={resetTimer}>REINICIAR</button>
                 {isHalftime && !isHalftimeRunning && (
                     <button className="btn-timer" onClick={startHalftime}>
                         INICIAR ENTRETIEMPO
                     </button>
                 )}
             </div>
-            {config.showPeriod && (
+            {config.showPeriod && !isGameOver && (
                 <div className="period-info">
                     <span>PERIODO</span>
                     <span id="period">{period}</span>
