@@ -1,0 +1,3 @@
+
+> scoreboard-pacifico@1.0.0 electron:dev
+> concurrently "npm start" "wait-on http://localhost:3000 && electron public/electron.js"
