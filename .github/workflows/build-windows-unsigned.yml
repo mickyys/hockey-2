@@ -58,7 +58,7 @@ jobs:
         env:
           # Deshabilitar la firma de código
           CSC_IDENTITY_AUTO_DISCOVERY: false
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           CI: true
 
       - name: Create manual release
@@ -80,7 +80,7 @@ jobs:
             3. Ejecuta como administrador si es necesario
             4. En la advertencia de Windows, click en "Más información" → "Ejecutar de todos modos"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Create tagged release
         if: github.event_name == 'push'
@@ -100,4 +100,4 @@ jobs:
             3. Ejecuta como administrador si es necesario
             4. En la advertencia de Windows, click en "Más información" → "Ejecutar de todos modos"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
