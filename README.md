@@ -1,70 +1,162 @@
-# Getting Started with Create React App
+# Scoreboard Pacífico 🏒
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Una aplicación de escritorio para marcadores de hockey sobre patines desarrollada con Electron y React.
 
-## Available Scripts
+## 🚀 Características
 
-In the project directory, you can run:
+- ✅ Aplicación de escritorio multiplataforma
+- ✅ Interfaz moderna con React 19
+- ✅ Generación automática de logos
+- ✅ Builds firmados digitalmente para Windows
+- ✅ CI/CD automatizado con GitHub Actions
+- ✅ Distribución portable y con instalador
 
-### `npm start`
+## 🛠️ Tecnologías
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React 19.1.1, React Router DOM 7.8.0
+- **Desktop**: Electron 37.2.6
+- **Build**: Electron Builder 26.0.12
+- **Testing**: Jest, React Testing Library
+- **CI/CD**: GitHub Actions
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📋 Requisitos
 
-### `npm test`
+- Node.js 18+ (recomendado 20)
+- npm o yarn
+- Windows 10+ (para builds de Windows)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Instalación
 
-### `npm run build`
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/hockey-2-cloudflare.git
+cd hockey-2-cloudflare
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Instalar dependencias
+npm install
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 💻 Desarrollo
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Modo desarrollo web
+```bash
+npm start
+```
 
-### `npm run eject`
+### Modo desarrollo Electron
+```bash
+npm run electron:dev
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Testing
+```bash
+npm test
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 📦 Build y Distribución
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Build local para Windows
+```bash
+# Build estándar
+npm run electron:build:win
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Build offline (sin elevación)
+npm run electron:build:offline
 
-## Learn More
+# Solo empaquetado (sin publicar)
+npm run dist
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Build automático con GitHub Actions
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Por Tag (Automático)
+```bash
+# Crear y pushear un tag
+git tag v1.0.0
+git push origin v1.0.0
+```
 
-### Code Splitting
+#### Manual desde GitHub
+1. Ve a **Actions** → **Build Windows Release**
+2. Click en **Run workflow**
+3. Configura:
+   - **Version**: `1.0.0`
+   - **Release type**: `draft`, `prerelease` o `release`
+4. Click **Run workflow**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔐 Configuración de Certificados
 
-### Analyzing the Bundle Size
+Para builds firmados, configura estos secrets en GitHub:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+| Secret | Descripción |
+|--------|-------------|
+| `WINDOWS_CERTIFICATE` | Certificado .p12 codificado en base64 |
+| `CSC_KEY_PASSWORD` | Contraseña del certificado |
+| `GH_TOKEN` | Token de GitHub para releases |
 
-### Making a Progressive Web App
+### Generar certificado base64
+```bash
+base64 -i tu-certificado.p12 | pbcopy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📁 Estructura del Proyecto
 
-### Advanced Configuration
+```
+hockey-2-cloudflare/
+├── public/
+│   └── electron.js          # Proceso principal de Electron
+├── src/                     # Código fuente React
+├── scripts/
+│   ├── generate-logo-list.js # Generador automático de logos
+│   ├── copy-electron.js     # Script de build
+│   └── prepare-offline.js   # Preparación offline
+├── assets/                  # Recursos (iconos, logos)
+├── .github/workflows/       # CI/CD GitHub Actions
+└── dist/                    # Builds generados
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🎯 Scripts Disponibles
 
-### Deployment
+| Script | Descripción |
+|--------|-------------|
+| `npm start` | Desarrollo web (React) |
+| `npm run build` | Build de producción |
+| `npm run electron:dev` | Desarrollo Electron |
+| `npm run electron:build` | Build Electron |
+| `npm run electron:build:win` | Build Windows específico |
+| `npm run electron:build:offline` | Build sin elevación |
+| `npm test` | Ejecutar tests |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🏒 Uso de la Aplicación
 
-### `npm run build` fails to minify
+1. **Inicio**: Ejecuta la aplicación desde el escritorio
+2. **Marcador**: Configura los equipos y comienza el partido
+3. **Controles**: Usa los botones para actualizar puntuaciones
+4. **Logos**: Los logos se cargan automáticamente desde `/assets/`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea tu feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la branch (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📝 Licencia
+
+Proyecto privado - © 2024 Hector Martinez
+
+## 🐛 Reportar Issues
+
+Usa el [sistema de issues de GitHub](https://github.com/tu-usuario/hockey-2-cloudflare/issues) para reportar bugs o solicitar features.
+
+## 📊 Releases
+
+Los releases se publican automáticamente en GitHub Releases con los siguientes archivos:
+
+- `Scoreboard-Pacífico-x.x.x-Setup.exe` - Instalador NSIS
+- `Scoreboard-Pacífico-x.x.x-portable.exe` - Versión portable
+
+---
+
+**Hecho con ❤️ para la comunidad de hockey sobre patines**
