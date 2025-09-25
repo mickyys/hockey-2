@@ -1,0 +1,103 @@
+name: Build Windows Release (Unsigned)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: false
+        default: '1.0.0'
+        type: string
+      release_type:
+        description: 'Release type'
+        required: false
+        default: 'draft'
+        type: choice
+        options:
+        - draft
+        - prerelease
+        - release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Extract version from tag or input
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ github.event.inputs.version }}"
+            Write-Host "Using manual version: $version"
+          } else {
+            $tag = $env:GITHUB_REF -replace 'refs/tags/', ''
+            $version = $tag -replace '^v', ''
+            Write-Host "Using tag version: $version"
+          }
+          npm version $version --no-git-tag-version
+
+      - name: Build React app
+        run: npm run build
+
+      # 🚫 Construcción sin firma de código
+      - name: Package Electron app (unsigned)
+        run: npm run electron:build:offline
+        env:
+          # Deshabilitar la firma de código
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: true
+
+      - name: Create manual release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe
+          tag_name: v${{ github.event.inputs.version }}
+          name: Release v${{ github.event.inputs.version }} (Unsigned)
+          draft: ${{ github.event.inputs.release_type == 'draft' }}
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+          body: |
+            ⚠️ **Aplicación sin firmar**
+            Esta versión no está firmada digitalmente. Windows puede mostrar advertencias de seguridad.
+            
+            Para instalar:
+            1. Descarga el archivo .exe
+            2. Click derecho → Propiedades → Desbloquear (si aparece)
+            3. Ejecuta como administrador si es necesario
+            4. En la advertencia de Windows, click en "Más información" → "Ejecutar de todos modos"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create tagged release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe
+          name: Release ${{ github.ref_name }} (Unsigned)
+          draft: false
+          prerelease: false
+          body: |
+            ⚠️ **Aplicación sin firmar**
+            Esta versión no está firmada digitalmente. Windows puede mostrar advertencias de seguridad.
+            
+            Para instalar:
+            1. Descarga el archivo .exe
+            2. Click derecho → Propiedades → Desbloquear (si aparece)
+            3. Ejecuta como administrador si es necesario
+            4. En la advertencia de Windows, click en "Más información" → "Ejecutar de todos modos"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
