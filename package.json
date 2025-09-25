@@ -26,7 +26,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron public/electron.js\"",
-    "electron:build": "npm run build && electron-builder"
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:win": "npm run build && electron-builder --win",
+    "electron:build:offline": "npm run build && electron-builder --win --config.nsis.allowElevation=false",
+    "dist": "electron-builder --publish=never",
+    "postinstall": "electron-builder install-app-deps"
   },
   "eslintConfig": {
     "extends": [
@@ -60,11 +64,60 @@
       "node_modules/**/*"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "assets",
+      "output": "dist"
     },
+    "compression": "normal",
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
+    "remoteBuild": false,
+    "beforeBuild": "scripts/prepare-offline.js",
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "publisherName": "Hector Martinez",
+      "verifyUpdateCodeSignature": false,
+      "requestedExecutionLevel": "asInvoker",
+      "certificateFile": "certificate.p12",
+      "certificatePassword": "${env.CSC_KEY_PASSWORD}",
+      "signingHashAlgorithms": ["sha256"],
+      "timeStampServer": "http://timestamp.digicert.com"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Scoreboard Pacífico"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "assets/",
+        "to": "assets/",
+        "filter": ["**/*"]
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "node_modules/electron/dist/",
+        "to": "./",
+        "filter": ["**/*"]
+      }
+    ],
+    "electronDownload": {
+      "cache": "~/.cache/electron"
     }
   }
 }

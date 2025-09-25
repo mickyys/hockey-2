@@ -23,16 +23,22 @@ jobs:
 
       - name: Extract version from tag
         run: |
-            $tag = $env:GITHUB_REF -replace 'refs/tags/', ''
-            $version = $tag -replace '^v', ''
-            Write-Host "Using version: $version"
-            npm version $version --no-git-tag-version
+          $tag = $env:GITHUB_REF -replace 'refs/tags/', ''
+          $version = $tag -replace '^v', ''
+          Write-Host "Using version: $version"
+          npm version $version --no-git-tag-version
+
+      # 🔑 Restaurar certificado
+      - name: Restore certificate
+        run: |
+          echo "${{ secrets.WINDOWS_CERTIFICATE }}" | base64 -d > certificate.p12
 
       - name: Build React app
         run: npm run build
 
-      - name: Package and publish Electron app to GitHub Releases
-        run: npx electron-builder --publish always
+      - name: Package and publish Electron app (offline config)
+        run: npm run electron:build:offline
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CI: true
