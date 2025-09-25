@@ -28,7 +28,7 @@
     "electron:dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron public/electron.js\"",
     "electron:build": "npm run build && electron-builder",
     "electron:build:win": "npm run build && electron-builder --win",
-    "electron:build:offline": "npm run build && electron-builder --win --config.nsis.allowElevation=false",
+    "electron:build:offline:publish": "npm run build && electron-builder --win --config.nsis.allowElevation=false --publish always",
     "dist": "electron-builder --publish=never",
     "postinstall": "electron-builder install-app-deps"
   },
