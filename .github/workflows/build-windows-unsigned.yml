@@ -54,7 +54,7 @@ jobs:
 
       # 🚫 Construcción sin firma de código
       - name: Package Electron app (unsigned)
-        run: npm run electron:build:offline
+        run: npm run electron:build:offline:publish
         env:
           # Deshabilitar la firma de código
           CSC_IDENTITY_AUTO_DISCOVERY: false
