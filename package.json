@@ -70,7 +70,6 @@
     "compression": "normal",
     "nodeGypRebuild": false,
     "buildDependenciesFromSource": false,
-    "remoteBuild": false,
     "beforeBuild": "scripts/prepare-offline.js",
     "win": {
       "target": [
@@ -84,13 +83,8 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "publisherName": "Hector Martinez",
       "verifyUpdateCodeSignature": false,
-      "requestedExecutionLevel": "asInvoker",
-      "certificateFile": "certificate.p12",
-      "certificatePassword": "${env.CSC_KEY_PASSWORD}",
-      "signingHashAlgorithms": ["sha256"],
-      "timeStampServer": "http://timestamp.digicert.com"
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
