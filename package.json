@@ -70,7 +70,6 @@
     "compression": "normal",
     "nodeGypRebuild": false,
     "buildDependenciesFromSource": false,
-    "beforeBuild": "scripts/prepare-offline.js",
     "win": {
       "target": [
         {
