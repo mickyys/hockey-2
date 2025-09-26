@@ -158,8 +158,8 @@ const ScoreboardPage = () => {
             interval = setInterval(() => {
                 setGameTime(prevTime => {
                     const newTime = prevTime - 1;
-                    if (newTime === 0) {
-                        // Llamar endPeriod inmediatamente cuando llegue a 0
+                    if (newTime === 3) {
+                        // Llamar endPeriod cuando queden 3 segundos
                         setTimeout(() => endPeriod(), 0);
                     }
                     return newTime;
@@ -175,8 +175,8 @@ const ScoreboardPage = () => {
             timeoutInterval = setInterval(() => {
                 setTimeoutTime(prevTime => {
                     const newTime = prevTime - 1;
-                    if (newTime === 0) {
-                        // Reproducir sonido inmediatamente cuando llegue a 0
+                    if (newTime === 3) {
+                        // Reproducir sonido cuando queden 3 segundos
                         setTimeout(() => {
                             playBuzzer();
                             setIsTimeoutActive(false);
@@ -196,8 +196,8 @@ const ScoreboardPage = () => {
             halftimeInterval = setInterval(() => {
                 setHalftimeTime(prevTime => {
                     const newTime = prevTime - 1;
-                    if (newTime === 0) {
-                        // Reproducir sonido inmediatamente cuando llegue a 0
+                    if (newTime === 3) {
+                        // Reproducir sonido cuando queden 3 segundos
                         setTimeout(() => {
                             playBuzzer();
                             advanceToNextPeriod();
