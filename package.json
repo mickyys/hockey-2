@@ -59,6 +59,12 @@
   "build": {
     "appId": "cl.hamp.scoreboard-pacifico",
     "productName": "Scoreboard Pacífico",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "!node_modules/**/test/**",
+      "!node_modules/**/*.d.ts"
+    ],
     "directories": {
       "buildResources": "assets",
       "output": "dist"
@@ -70,16 +76,12 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
-      "icon": "assets/icon.ico",
-      "verifyUpdateCodeSignature": false,
-      "requestedExecutionLevel": "asInvoker"
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -95,7 +97,9 @@
       {
         "from": "assets/",
         "to": "assets/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "electronDownload": {

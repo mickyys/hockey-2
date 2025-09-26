@@ -8,8 +8,51 @@ const ScoreboardPage = () => {
     const { config } = useContext(ConfigContext);
     const navigate = useNavigate();
 
-    // Sound effects
-    const buzzerSound = useRef(new Audio('/sounds/mixkit-bell-ring-buzzer-2962.wav'));
+    // Sound effects - usar ruta que funcione tanto en dev como en build de Electron
+    const buzzerSound = useRef(null);
+    
+    // Inicializar el audio
+    useEffect(() => {
+        const initAudio = () => {
+            try {
+                // En Electron empaquetado, usar ruta relativa
+                const audioPath = './sounds/mixkit-bell-ring-buzzer-2962.wav';
+                buzzerSound.current = new Audio(audioPath);
+                buzzerSound.current.preload = 'auto';
+                
+                // Manejar errores de carga
+                buzzerSound.current.onerror = () => {
+                    console.warn('Error loading buzzer sound from:', audioPath);
+                    // Intentar ruta alternativa
+                    try {
+                        const fallbackPath = process.env.PUBLIC_URL + '/sounds/mixkit-bell-ring-buzzer-2962.wav';
+                        buzzerSound.current = new Audio(fallbackPath);
+                        buzzerSound.current.preload = 'auto';
+                    } catch (error) {
+                        console.error('Failed to load buzzer sound:', error);
+                    }
+                };
+            } catch (error) {
+                console.error('Failed to initialize buzzer sound:', error);
+            }
+        };
+        
+        initAudio();
+    }, []);
+
+    // Función helper para reproducir el sonido de manera segura
+    const playBuzzer = useCallback(() => {
+        if (buzzerSound.current) {
+            try {
+                buzzerSound.current.currentTime = 0; // Reiniciar desde el inicio
+                buzzerSound.current.play().catch(error => {
+                    console.warn('Error playing buzzer sound:', error);
+                });
+            } catch (error) {
+                console.warn('Error playing buzzer sound:', error);
+            }
+        }
+    }, []);
 
     // Team State
     const [homeScore, setHomeScore] = useState(0);
@@ -52,13 +95,13 @@ const ScoreboardPage = () => {
 
     const endPeriod = useCallback(() => {
         setIsRunning(false);
-        buzzerSound.current.play();
+        playBuzzer();
         if (period === config.halftimeAfterPeriod && config.halftimeDuration > 0) {
             setIsHalftime(true);
         } else {
             advanceToNextPeriod();
         }
-    }, [period, config, advanceToNextPeriod]);
+    }, [period, config, advanceToNextPeriod, playBuzzer]);
 
     const startTimeout = useCallback((team) => {
         if (isTimeoutActive || (team === 'home' && homeTimeoutUsed) || (team === 'away' && awayTimeoutUsed)) return;
@@ -79,7 +122,7 @@ const ScoreboardPage = () => {
 
             const keyActions = {
                 'Space': () => setIsRunning(prev => !prev),
-                'Enter': () => buzzerSound.current.play(),
+                'Enter': () => playBuzzer(),
                 'Digit1': () => setHomeScore(s => s + 1),
                 'Digit2': () => setHomeScore(s => Math.max(0, s - 1)),
                 'Digit9': () => setAwayScore(s => s + 1),
@@ -100,7 +143,7 @@ const ScoreboardPage = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [startTimeout]);
+    }, [startTimeout, playBuzzer]);
 
 
     useEffect(() => {
@@ -128,12 +171,12 @@ const ScoreboardPage = () => {
                 setTimeoutTime(prevTime => prevTime - 1);
             }, 1000);
         } else if (isTimeoutActive && timeoutTime === 0) {
-            buzzerSound.current.play();
+            playBuzzer();
             setIsTimeoutActive(false);
             setTimeoutTeam(null);
         }
         return () => clearInterval(timeoutInterval);
-    }, [isTimeoutActive, timeoutTime]);
+    }, [isTimeoutActive, timeoutTime, playBuzzer]);
 
     useEffect(() => {
         let halftimeInterval = null;
@@ -142,11 +185,11 @@ const ScoreboardPage = () => {
                 setHalftimeTime(prevTime => prevTime - 1);
             }, 1000);
         } else if (isHalftime && isHalftimeRunning && halftimeTime === 0) {
-            buzzerSound.current.play();
+            playBuzzer();
             advanceToNextPeriod();
         }
         return () => clearInterval(halftimeInterval);
-    }, [isHalftime, isHalftimeRunning, halftimeTime, advanceToNextPeriod]);
+    }, [isHalftime, isHalftimeRunning, halftimeTime, advanceToNextPeriod, playBuzzer]);
 
     if (!config) {
         return null;
