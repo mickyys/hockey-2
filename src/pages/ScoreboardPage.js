@@ -95,13 +95,13 @@ const ScoreboardPage = () => {
 
     const endPeriod = useCallback(() => {
         setIsRunning(false);
-        playBuzzer();
+        // Quitar playBuzzer() porque ya suena a los 3 segundos
         if (period === config.halftimeAfterPeriod && config.halftimeDuration > 0) {
             setIsHalftime(true);
         } else {
             advanceToNextPeriod();
         }
-    }, [period, config, advanceToNextPeriod, playBuzzer]);
+    }, [period, config, advanceToNextPeriod]);
 
     const startTimeout = useCallback((team) => {
         if (isTimeoutActive || (team === 'home' && homeTimeoutUsed) || (team === 'away' && awayTimeoutUsed)) return;
