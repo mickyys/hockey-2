@@ -21,7 +21,7 @@ const Team = ({ teamType, config, startTimeout, teamState, teamActions }) => {
     return (
         <div className={`team team-${teamType}`} id={`${teamType}-team-display`}>
             <div className="team-header" id={`${teamType}-header`}>
-                {teamConfig.logo && <img src={`/${teamConfig.logo}`} alt="Logo" className="team-logo" />}
+                {teamConfig.logo && <img src={`${teamConfig.logo}`} alt="Logo" className="team-logo" />}
             </div>
             <div className="team-name" id={`${teamType}-name`}>{teamConfig.name}</div>
             <div className="team-score" id={`${teamType}-score`}>{score}</div>

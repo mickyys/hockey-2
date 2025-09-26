@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const logosDir = path.join(__dirname, '../public/logos');
+const logosDir = path.join(__dirname, '../public/logo');
 const outputFile = path.join(__dirname, '../src/logoList.js');
 
 function capitalizeFirstLetter(string) {
@@ -39,7 +39,7 @@ try {
     .map(file => ({
       filename: file,
       name: formatLogoName(file),
-      path: `/logos/${file}`
+      path: `../logo/${file}`
     }));
 
   const logoListContent = `export const logoList = ${JSON.stringify(logoFiles, null, 2)};

@@ -159,7 +159,7 @@ const ScoreboardPage = () => {
                 setGameTime(prevTime => {
                     const newTime = prevTime - 1;
                     // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 3) {
+                    if (newTime === 2) {
                         setTimeout(() => playBuzzer(), 0);
                     }
                     // Terminar período cuando llegue a 0
@@ -180,7 +180,7 @@ const ScoreboardPage = () => {
                 setTimeoutTime(prevTime => {
                     const newTime = prevTime - 1;
                     // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 3) {
+                    if (newTime === 2) {
                         setTimeout(() => playBuzzer(), 0);
                     }
                     // Terminar timeout cuando llegue a 0
@@ -204,7 +204,7 @@ const ScoreboardPage = () => {
                 setHalftimeTime(prevTime => {
                     const newTime = prevTime - 1;
                     // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 3) {
+                    if (newTime === 2) {
                         setTimeout(() => playBuzzer(), 0);
                     }
                     // Terminar descanso cuando llegue a 0
