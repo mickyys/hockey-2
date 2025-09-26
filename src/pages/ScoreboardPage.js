@@ -156,10 +156,15 @@ const ScoreboardPage = () => {
         let interval = null;
         if (isRunning && gameTime > 0 && !isTimeoutActive && !isGameOver) {
             interval = setInterval(() => {
-                setGameTime(prevTime => prevTime - 1);
+                setGameTime(prevTime => {
+                    const newTime = prevTime - 1;
+                    if (newTime === 0) {
+                        // Llamar endPeriod inmediatamente cuando llegue a 0
+                        setTimeout(() => endPeriod(), 0);
+                    }
+                    return newTime;
+                });
             }, 1000);
-        } else if (gameTime === 0 && isRunning) {
-            endPeriod();
         }
         return () => clearInterval(interval);
     }, [isRunning, gameTime, isTimeoutActive, isGameOver, endPeriod]);
@@ -168,12 +173,19 @@ const ScoreboardPage = () => {
         let timeoutInterval = null;
         if (isTimeoutActive && timeoutTime > 0) {
             timeoutInterval = setInterval(() => {
-                setTimeoutTime(prevTime => prevTime - 1);
+                setTimeoutTime(prevTime => {
+                    const newTime = prevTime - 1;
+                    if (newTime === 0) {
+                        // Reproducir sonido inmediatamente cuando llegue a 0
+                        setTimeout(() => {
+                            playBuzzer();
+                            setIsTimeoutActive(false);
+                            setTimeoutTeam(null);
+                        }, 0);
+                    }
+                    return newTime;
+                });
             }, 1000);
-        } else if (isTimeoutActive && timeoutTime === 0) {
-            playBuzzer();
-            setIsTimeoutActive(false);
-            setTimeoutTeam(null);
         }
         return () => clearInterval(timeoutInterval);
     }, [isTimeoutActive, timeoutTime, playBuzzer]);
@@ -182,11 +194,18 @@ const ScoreboardPage = () => {
         let halftimeInterval = null;
         if (isHalftime && isHalftimeRunning && halftimeTime > 0) {
             halftimeInterval = setInterval(() => {
-                setHalftimeTime(prevTime => prevTime - 1);
+                setHalftimeTime(prevTime => {
+                    const newTime = prevTime - 1;
+                    if (newTime === 0) {
+                        // Reproducir sonido inmediatamente cuando llegue a 0
+                        setTimeout(() => {
+                            playBuzzer();
+                            advanceToNextPeriod();
+                        }, 0);
+                    }
+                    return newTime;
+                });
             }, 1000);
-        } else if (isHalftime && isHalftimeRunning && halftimeTime === 0) {
-            playBuzzer();
-            advanceToNextPeriod();
         }
         return () => clearInterval(halftimeInterval);
     }, [isHalftime, isHalftimeRunning, halftimeTime, advanceToNextPeriod, playBuzzer]);
