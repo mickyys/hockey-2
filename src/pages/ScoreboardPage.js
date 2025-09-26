@@ -158,8 +158,12 @@ const ScoreboardPage = () => {
             interval = setInterval(() => {
                 setGameTime(prevTime => {
                     const newTime = prevTime - 1;
+                    // Reproducir sonido cuando queden 3 segundos
                     if (newTime === 3) {
-                        // Llamar endPeriod cuando queden 3 segundos
+                        setTimeout(() => playBuzzer(), 0);
+                    }
+                    // Terminar período cuando llegue a 0
+                    if (newTime === 0) {
                         setTimeout(() => endPeriod(), 0);
                     }
                     return newTime;
@@ -167,7 +171,7 @@ const ScoreboardPage = () => {
             }, 1000);
         }
         return () => clearInterval(interval);
-    }, [isRunning, gameTime, isTimeoutActive, isGameOver, endPeriod]);
+    }, [isRunning, gameTime, isTimeoutActive, isGameOver, endPeriod, playBuzzer]);
 
     useEffect(() => {
         let timeoutInterval = null;
@@ -175,10 +179,13 @@ const ScoreboardPage = () => {
             timeoutInterval = setInterval(() => {
                 setTimeoutTime(prevTime => {
                     const newTime = prevTime - 1;
+                    // Reproducir sonido cuando queden 3 segundos
                     if (newTime === 3) {
-                        // Reproducir sonido cuando queden 3 segundos
+                        setTimeout(() => playBuzzer(), 0);
+                    }
+                    // Terminar timeout cuando llegue a 0
+                    if (newTime === 0) {
                         setTimeout(() => {
-                            playBuzzer();
                             setIsTimeoutActive(false);
                             setTimeoutTeam(null);
                         }, 0);
@@ -196,12 +203,13 @@ const ScoreboardPage = () => {
             halftimeInterval = setInterval(() => {
                 setHalftimeTime(prevTime => {
                     const newTime = prevTime - 1;
+                    // Reproducir sonido cuando queden 3 segundos
                     if (newTime === 3) {
-                        // Reproducir sonido cuando queden 3 segundos
-                        setTimeout(() => {
-                            playBuzzer();
-                            advanceToNextPeriod();
-                        }, 0);
+                        setTimeout(() => playBuzzer(), 0);
+                    }
+                    // Terminar descanso cuando llegue a 0
+                    if (newTime === 0) {
+                        setTimeout(() => advanceToNextPeriod(), 0);
                     }
                     return newTime;
                 });
