@@ -9,17 +9,34 @@ function createWindow() {
         height: 800,
         webPreferences: {
             nodeIntegration: true,
+            contextIsolation: false,
+            enableRemoteModule: false
         },
+        show: false // No mostrar hasta que esté listo
     });
 
     // and load the index.html of the app.
-    win.loadURL(
-        isDev
-            ? 'http://localhost:3000'
-            : `file://${path.join(__dirname, 'index.html')}`
-    );
+    const startUrl = isDev 
+        ? 'http://localhost:3000' 
+        : `file://${path.join(__dirname, 'index.html')}`;
+    
+    console.log('Loading URL:', startUrl);
+    console.log('__dirname:', __dirname);
+    console.log('isDev:', isDev);
+    
+    win.loadURL(startUrl);
+    
+    // Mostrar ventana cuando esté lista
+    win.once('ready-to-show', () => {
+        win.show();
+    });
+    
+    // Manejo de errores
+    win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+        console.error('Failed to load:', errorCode, errorDescription);
+    });
 
-    // Open the DevTools.
+    // Open the DevTools in development or for debugging
     if (isDev) {
         win.webContents.openDevTools();
     }
