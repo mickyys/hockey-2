@@ -29,12 +29,18 @@ export const ConfigProvider = ({ children }) => {
         awayTeam: 'VISITANTE',
         awayColor: '#8f1a1a',
         periodDuration: 20,
+        periodMinutes: 20,
+        periodSeconds: 0,
+        periodDurationSeconds: 1200,
         totalPeriods: 2,
         showPeriod: true,
         showTimer: true,
         homeLogo: '',
         awayLogo: '',
         halftimeDuration: 5,
+        halftimeMinutes: 5,
+        halftimeSeconds: 0,
+        halftimeDurationSeconds: 300,
         halftimeAfterPeriod: 1
     };
 

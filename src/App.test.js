@@ -1,8 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import { ConfigProvider } from './context/ConfigContext';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test('renders scoreboard config page', () => {
+  render(
+    <ConfigProvider>
+      <App />
+    </ConfigProvider>
+  );
+  expect(screen.getByText(/Configuración del Tablero/i)).toBeInTheDocument();
 });

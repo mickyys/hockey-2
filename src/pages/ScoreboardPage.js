@@ -4,55 +4,125 @@ import { ConfigContext } from '../context/ConfigContext';
 import Team from '../components/Team';
 import Timer from '../components/Timer';
 
+const getDurationSeconds = (currentConfig, durationType) => {
+    const secondsKey = `${durationType}DurationSeconds`;
+    const minutesKey = `${durationType}Minutes`;
+    const legacyMinutesKey = `${durationType}Duration`;
+    const configuredSeconds = Number(currentConfig?.[secondsKey]);
+
+    if (Number.isFinite(configuredSeconds) && configuredSeconds >= 0) {
+        return configuredSeconds;
+    }
+
+    const configuredMinutes = Number(currentConfig?.[minutesKey]);
+    const configuredRemainderSeconds = Number(currentConfig?.[`${durationType}Seconds`]);
+    if (Number.isFinite(configuredMinutes) && Number.isFinite(configuredRemainderSeconds)) {
+        return Math.max(0, (configuredMinutes * 60) + configuredRemainderSeconds);
+    }
+
+    const fallbackMinutes = Number(currentConfig?.[legacyMinutesKey]);
+    return Number.isFinite(fallbackMinutes) ? Math.max(0, fallbackMinutes * 60) : 0;
+};
+
 const ScoreboardPage = () => {
     const { config } = useContext(ConfigContext);
     const navigate = useNavigate();
+    const periodDurationSeconds = getDurationSeconds(config, 'period');
+    const halftimeDurationSeconds = getDurationSeconds(config, 'halftime');
 
     // Sound effects - usar ruta que funcione tanto en dev como en build de Electron
     const buzzerSound = useRef(null);
+    const buzzerSource = 'mixkit-bell-ring-buzzer-2962.wav';
+
+    const getBuzzerCandidates = useCallback(() => {
+        const candidates = [];
+        const normalizedPublicUrl = (process.env.PUBLIC_URL || '').replace(/\/$/, '');
+
+        if (normalizedPublicUrl) {
+            candidates.push(`${normalizedPublicUrl}/sounds/${buzzerSource}`);
+        }
+
+        candidates.push(`/sounds/${buzzerSource}`);
+        candidates.push(`./sounds/${buzzerSource}`);
+
+        try {
+            candidates.push(new URL(`sounds/${buzzerSource}`, window.location.href).href);
+        } catch (error) {
+            // Ignorar errores de URL en entornos no estándar
+        }
+
+        return [...new Set(candidates)];
+    }, []);
+
+    const tryLoadAudioFromPath = useCallback((path) => new Promise((resolve) => {
+        const audio = new Audio();
+        let settled = false;
+
+        const cleanup = () => {
+            audio.removeEventListener('canplaythrough', onReady);
+            audio.removeEventListener('loadeddata', onReady);
+            audio.removeEventListener('error', onError);
+        };
+
+        const finish = (result) => {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            resolve(result);
+        };
+
+        const onReady = () => finish(audio);
+        const onError = () => finish(null);
+
+        audio.preload = 'auto';
+        audio.addEventListener('canplaythrough', onReady, { once: true });
+        audio.addEventListener('loadeddata', onReady, { once: true });
+        audio.addEventListener('error', onError, { once: true });
+        audio.src = path;
+        audio.load();
+
+        window.setTimeout(() => finish(null), 1500);
+    }), []);
+
+    const initBuzzer = useCallback(async () => {
+        if (buzzerSound.current) return true;
+
+        const candidates = getBuzzerCandidates();
+        for (const path of candidates) {
+            // eslint-disable-next-line no-await-in-loop
+            const loadedAudio = await tryLoadAudioFromPath(path);
+            if (loadedAudio) {
+                buzzerSound.current = loadedAudio;
+                return true;
+            }
+        }
+
+        console.warn('No se pudo cargar el sonido del buzzer en rutas locales:', candidates);
+        return false;
+    }, [getBuzzerCandidates, tryLoadAudioFromPath]);
     
     // Inicializar el audio
     useEffect(() => {
-        const initAudio = () => {
-            try {
-                // En Electron empaquetado, usar ruta relativa
-                const audioPath = './sounds/mixkit-bell-ring-buzzer-2962.wav';
-                buzzerSound.current = new Audio(audioPath);
-                buzzerSound.current.preload = 'auto';
-                
-                // Manejar errores de carga
-                buzzerSound.current.onerror = () => {
-                    console.warn('Error loading buzzer sound from:', audioPath);
-                    // Intentar ruta alternativa
-                    try {
-                        const fallbackPath = process.env.PUBLIC_URL + '/sounds/mixkit-bell-ring-buzzer-2962.wav';
-                        buzzerSound.current = new Audio(fallbackPath);
-                        buzzerSound.current.preload = 'auto';
-                    } catch (error) {
-                        console.error('Failed to load buzzer sound:', error);
-                    }
-                };
-            } catch (error) {
-                console.error('Failed to initialize buzzer sound:', error);
+        initBuzzer();
+        return () => {
+            if (buzzerSound.current) {
+                buzzerSound.current.pause();
             }
         };
-        
-        initAudio();
-    }, []);
+    }, [initBuzzer]);
 
     // Función helper para reproducir el sonido de manera segura
-    const playBuzzer = useCallback(() => {
-        if (buzzerSound.current) {
-            try {
-                buzzerSound.current.currentTime = 0; // Reiniciar desde el inicio
-                buzzerSound.current.play().catch(error => {
-                    console.warn('Error playing buzzer sound:', error);
-                });
-            } catch (error) {
-                console.warn('Error playing buzzer sound:', error);
-            }
+    const playBuzzer = useCallback(async () => {
+        const isReady = buzzerSound.current || await initBuzzer();
+        if (!isReady || !buzzerSound.current) return;
+
+        try {
+            buzzerSound.current.currentTime = 0;
+            await buzzerSound.current.play();
+        } catch (error) {
+            console.warn('Error playing buzzer sound:', error);
         }
-    }, []);
+    }, [initBuzzer]);
 
     // Team State
     const [homeScore, setHomeScore] = useState(0);
@@ -61,14 +131,14 @@ const ScoreboardPage = () => {
     const [awayFouls, setAwayFouls] = useState(0);
 
     // Timer State
-    const [gameTime, setGameTime] = useState(config ? config.periodDuration * 60 : 0);
+    const [gameTime, setGameTime] = useState(config ? periodDurationSeconds : 0);
     const [isRunning, setIsRunning] = useState(false);
     const [period, setPeriod] = useState(1);
     const [isGameOver, setIsGameOver] = useState(false);
 
     // Halftime State
     const [isHalftime, setIsHalftime] = useState(false);
-    const [halftimeTime, setHalftimeTime] = useState(config ? config.halftimeDuration * 60 : 0);
+    const [halftimeTime, setHalftimeTime] = useState(config ? halftimeDurationSeconds : 0);
     const [isHalftimeRunning, setIsHalftimeRunning] = useState(false);
 
     // Timeout State
@@ -81,27 +151,26 @@ const ScoreboardPage = () => {
     const advanceToNextPeriod = useCallback(() => {
         if (period < config.totalPeriods) {
             setPeriod(p => p + 1);
-            setGameTime(config.periodDuration * 60);
+            setGameTime(periodDurationSeconds);
             setHomeTimeoutUsed(false);
             setAwayTimeoutUsed(false);
             setIsHalftime(false);
             setIsHalftimeRunning(false);
-            setHalftimeTime(config.halftimeDuration * 60);
+            setHalftimeTime(halftimeDurationSeconds);
         } else {
             setIsGameOver(true);
             setIsRunning(false);
         }
-    }, [period, config]);
+    }, [period, config, periodDurationSeconds, halftimeDurationSeconds]);
 
     const endPeriod = useCallback(() => {
         setIsRunning(false);
-        // Quitar playBuzzer() porque ya suena a los 3 segundos
-        if (period === config.halftimeAfterPeriod && config.halftimeDuration > 0) {
+        if (period === config.halftimeAfterPeriod && halftimeDurationSeconds > 0) {
             setIsHalftime(true);
         } else {
             advanceToNextPeriod();
         }
-    }, [period, config, advanceToNextPeriod]);
+    }, [period, config, halftimeDurationSeconds, advanceToNextPeriod]);
 
     const startTimeout = useCallback((team) => {
         if (isTimeoutActive || (team === 'home' && homeTimeoutUsed) || (team === 'away' && awayTimeoutUsed)) return;
@@ -115,13 +184,26 @@ const ScoreboardPage = () => {
         if (team === 'away') setAwayTimeoutUsed(true);
     }, [isTimeoutActive, homeTimeoutUsed, awayTimeoutUsed]);
 
+    const toggleMainTimer = useCallback(() => {
+        setIsRunning(prev => {
+            if (prev) return false;
+            return !isTimeoutActive && !isHalftime && !isGameOver;
+        });
+    }, [isTimeoutActive, isHalftime, isGameOver]);
+
     // Keyboard Shortcuts
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.target.tagName.toLowerCase() === 'input') return;
 
+            const isSpaceKey = event.code === 'Space' || event.key === ' ' || event.key === 'Spacebar';
+            if (isSpaceKey) {
+                event.preventDefault();
+                toggleMainTimer();
+                return;
+            }
+
             const keyActions = {
-                'Space': () => setIsRunning(prev => !prev),
                 'Enter': () => playBuzzer(),
                 'Digit1': () => setHomeScore(s => s + 1),
                 'Digit2': () => setHomeScore(s => Math.max(0, s - 1)),
@@ -143,7 +225,7 @@ const ScoreboardPage = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [startTimeout, playBuzzer]);
+    }, [startTimeout, playBuzzer, toggleMainTimer]);
 
 
     useEffect(() => {
@@ -157,14 +239,10 @@ const ScoreboardPage = () => {
         if (isRunning && gameTime > 0 && !isTimeoutActive && !isGameOver) {
             interval = setInterval(() => {
                 setGameTime(prevTime => {
-                    const newTime = prevTime - 1;
-                    // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 2) {
-                        setTimeout(() => playBuzzer(), 0);
-                    }
-                    // Terminar período cuando llegue a 0
+                    const newTime = Math.max(prevTime - 1, 0);
                     if (newTime === 0) {
-                        setTimeout(() => endPeriod(), 0);
+                        playBuzzer();
+                        endPeriod();
                     }
                     return newTime;
                 });
@@ -178,17 +256,11 @@ const ScoreboardPage = () => {
         if (isTimeoutActive && timeoutTime > 0) {
             timeoutInterval = setInterval(() => {
                 setTimeoutTime(prevTime => {
-                    const newTime = prevTime - 1;
-                    // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 2) {
-                        setTimeout(() => playBuzzer(), 0);
-                    }
-                    // Terminar timeout cuando llegue a 0
+                    const newTime = Math.max(prevTime - 1, 0);
                     if (newTime === 0) {
-                        setTimeout(() => {
-                            setIsTimeoutActive(false);
-                            setTimeoutTeam(null);
-                        }, 0);
+                        playBuzzer();
+                        setIsTimeoutActive(false);
+                        setTimeoutTeam(null);
                     }
                     return newTime;
                 });
@@ -202,14 +274,10 @@ const ScoreboardPage = () => {
         if (isHalftime && isHalftimeRunning && halftimeTime > 0) {
             halftimeInterval = setInterval(() => {
                 setHalftimeTime(prevTime => {
-                    const newTime = prevTime - 1;
-                    // Reproducir sonido cuando queden 3 segundos
-                    if (newTime === 2) {
-                        setTimeout(() => playBuzzer(), 0);
-                    }
-                    // Terminar descanso cuando llegue a 0
+                    const newTime = Math.max(prevTime - 1, 0);
                     if (newTime === 0) {
-                        setTimeout(() => advanceToNextPeriod(), 0);
+                        playBuzzer();
+                        advanceToNextPeriod();
                     }
                     return newTime;
                 });
@@ -229,7 +297,7 @@ const ScoreboardPage = () => {
         toggleTimer: () => setIsRunning(prev => !prev && !isTimeoutActive && !isHalftime && !isGameOver),
         resetTimer: () => {
             setIsRunning(false);
-            setGameTime(config.periodDuration * 60);
+            setGameTime(periodDurationSeconds);
             setIsGameOver(false);
             setPeriod(1);
         },
