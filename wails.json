@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "hockey-wails",
+  "outputfilename": "tablero-hockey",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "hmartinez",
+    "email": "hamp.martinez@gmail.com"
+  },
+  "info": {
+    "productName": "Scoreboard Pacífico",
+    "productVersion": "1.0.0",
+    "companyName": "hmartinez",
+    "copyright": "Copyright © 2026 hmartinez",
+    "comments": "Marcador de hockey en tiempo real"
+  }
+}
